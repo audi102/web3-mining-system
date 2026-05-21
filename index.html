@@ -190,7 +190,15 @@
             document.getElementById('promo_marquee').innerHTML = t.promo_mar;
         }
 
-        window.openAdminPortal = function() { if (prompt("Manager Key:") === "258369@@") { document.getElementById('adminPanel').style.display = 'block'; loadAdminPanel(); } };
+        window.openAdminPortal = function() { 
+    const myAdminEmail = "vutaycrc95204@gmail.com"; // Email của bạn
+    if (fb.auth.currentUser && fb.auth.currentUser.email === myAdminEmail) { 
+        document.getElementById('adminPanel').style.display = 'block'; 
+        loadAdminPanel(); 
+    } else {
+        alert("Bạn không có quyền truy cập!");
+    }
+};
         
         function loadAdminPanel() {
             fb.onValue(fb.ref(fb.db, 'admin/requests'), (snap) => {
