@@ -203,11 +203,13 @@
         function loadAdminPanel() {
             fb.onValue(fb.ref(fb.db, 'admin/requests'), (snap) => {
                 const list = document.getElementById('adminRequests'); list.innerHTML = "";
-                snap.forEach((c) => { const r = c.val(); if(r.status === 'pending') {
-                    const d = document.createElement('div'); d.className = "req-card";
-                    d.innerHTML = `<b>${r.type.toUpperCase()} $${r.amount}</b><br>${r.email}<br><button onclick="approveReq('${c.key}','${r.uid}',${r.amount},'${r.type}')" style="background:var(--green); border:none; padding:5px 10px; border-radius:5px;">OK</button> <button onclick="fb.update(fb.ref(fb.db, 'admin/requests/${c.key}'),{status:'rejected'})" style="background:var(--red); border:none; padding:5px 10px; border-radius:5px; color:#fff;">NO</button>`;
-                    list.prepend(d);
-                }});
+                snap.forEach((c) => { 
+        const r = c.val(); 
+        const d = document.createElement('div'); 
+        d.className = "req-card";
+        d.innerHTML = `<b>${r.type ? r.type.toUpperCase() : 'N/A'}</b> ${r.amount || 0}<br>${r.email}<br>Status: ${r.status || 'Chưa xác định'}<br><button onclick="approveRequest('${c.key}')">Duyệt</button>`;
+        list.prepend(d);
+    });
             });
             fb.onValue(fb.ref(fb.db, 'users'), (snap) => {
                 const list = document.getElementById('adminUserList'); list.innerHTML = "";
